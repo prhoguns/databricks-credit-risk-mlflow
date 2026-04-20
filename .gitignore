@@ -1,0 +1,6 @@
+data/*
+!data/.gitkeep
+mlruns/
+mlartifacts/
+lake/
+__pycache__/
