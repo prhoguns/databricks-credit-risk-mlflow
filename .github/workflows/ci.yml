@@ -1,0 +1,14 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  notebooks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install pyspark==3.4.0 mlflow==2.18.0 xlrd==2.0.1 pandas==2.2.3 pyarrow==18.1.0 requests==2.32.3 tabulate==0.9.0
+      - name: Run the three notebooks on local Spark
+        run: WORK_DIR=$PWD/lake python tests/run_local.py
+      - name: Export MLflow runs
+        run: MLFLOW_TRACKING_URI=sqlite:///$PWD/lake/mlflow.db python tests/export_runs.py
