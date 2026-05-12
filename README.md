@@ -1,5 +1,7 @@
 # Credit Default Risk on Databricks with MLflow
 
+_Portfolio sprint timeline: January–September 2026. Reported results retain their actual run dates._
+
 Spark MLlib credit-risk model with the full MLflow lifecycle — experiment tracking, cross-validated
 tuning, feature importances, model registry with an alias, and a batch-scoring job that loads the
 model by alias rather than by file. Written as Databricks notebooks; verified end to end on plain
