@@ -73,3 +73,7 @@ local SparkSession with a SQLite-backed MLflow store. `TABLE_FORMAT=parquet` loc
 - Champion/challenger promotion gated on a metric threshold, as a Databricks Job.
 - SHAP values per customer for adverse-action reasons (a regulatory requirement for credit decisions).
 - Drift monitoring: population stability index on the score distribution per scoring run.
+
+## Acknowledgments
+
+AI tools assisted with documentation and repository organization.
