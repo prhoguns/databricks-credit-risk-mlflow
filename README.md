@@ -19,19 +19,24 @@ Spark in Docker, so every number below comes from a real run.
 
 | run | tuned params | test AUC | PR-AUC | KS | CV AUC |
 |---|---|---:|---:|---:|---:|
-| gradient_boosted_trees (`@champion`) | maxDepth=5, maxIter=40 | **0.783** | 0.554 | **0.426** | 0.780 |
-| logistic_regression | regParam=0.01, elasticNet=0 | 0.756 | 0.507 | 0.407 | 0.756 |
+| gradient_boosted_trees (`@champion`) | maxDepth=3, maxIter=80 | **0.789** | 0.561 | **0.443** | 0.782 |
+| logistic_regression | regParam=0.01, elasticNet=0 | 0.752 | 0.508 | 0.405 | 0.753 |
+
+An earlier version built the tuning grids from class attributes (`GBTClassifier.maxDepth`) instead of
+the estimator's own params. Spark ignores those silently, so cross-validation compared four identical
+default models and the logged "best" parameters were not the ones trained. Building the grids from the
+estimator instance fixed it; the numbers above are from the corrected run.
 
 Batch scoring puts customers in three bands; the bands are well calibrated against actual outcomes:
 
 | risk band | customers | mean predicted p | actual default rate |
 |---|---:|---:|---:|
-| low (< 0.25) | 22,081 | 0.131 | 0.114 |
-| medium | 4,338 | 0.352 | 0.364 |
-| high (≥ 0.50) | 3,581 | 0.687 | 0.706 |
+| low (< 0.25) | 22,066 | 0.122 | 0.115 |
+| medium | 4,367 | 0.348 | 0.369 |
+| high (≥ 0.50) | 3,567 | 0.686 | 0.697 |
 
 For context, published results on this dataset cluster around AUC 0.77–0.78; the model is at the
-ceiling the features allow, not above it. KS is reported because it is the number credit-risk teams
+top of that range, not far above it. KS is reported because it is the number credit-risk teams
 quote; the top-decile lift is what a collections team would act on.
 
 ## What each piece is for
@@ -53,7 +58,7 @@ quote; the top-decile lift is what a collections team would act on.
 git clone https://github.com/prhoguns/databricks-credit-risk-mlflow.git
 cd databricks-credit-risk-mlflow
 docker build -t credit-risk .
-docker run --rm -v "$PWD":/app credit-risk /opt/spark/bin/spark-submit tests/run_local.py      # ~4 min, downloads the data
+docker run --rm -v "$PWD":/app credit-risk python tests/run_local.py      # ~4 min, downloads the data
 docker run --rm -v "$PWD":/app -p 5000:5000 credit-risk mlflow ui --host 0.0.0.0 --backend-store-uri sqlite:////app/lake/mlflow.db
 ```
 

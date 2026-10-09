@@ -12,6 +12,7 @@ t = runs[cols].rename(columns=lambda c: c.split(".", 1)[1])
 t = t.rename(columns={"mlflow.runName": "run"})
 num = t.select_dtypes("number").columns
 t[num] = t[num].astype(float).round(4)
+t = t.astype(object).where(t.notna(), "")  # blank, not "nan", for params a model does not have
 client = mlflow.tracking.MlflowClient()
 champion = client.get_model_version_by_alias("credit_default_gbt", "champion")
 versions = [(v.name, v.version, ["champion"] if v.version == champion.version else [], v.tags.get("test_auc"), v.run_id[:8]) for v in client.search_model_versions("name='credit_default_gbt'")]

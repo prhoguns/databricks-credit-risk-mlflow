@@ -94,11 +94,15 @@ def log_run(name, estimator, grid, extra_params=None):
         return run.info.run_id, metrics
 
 
-lr_grid = ParamGridBuilder().addGrid(LogisticRegression.regParam, [0.01, 0.1]).addGrid(LogisticRegression.elasticNetParam, [0.0, 0.5]).build()
-lr_run, lr_metrics = log_run("logistic_regression", LogisticRegression(labelCol="label", maxIter=50), lr_grid)
+# Grids must use the estimator instance's params (lr.regParam), not the class attribute
+# (LogisticRegression.regParam): Spark silently ignores class-level params, so every candidate would train the defaults.
+lr = LogisticRegression(labelCol="label", maxIter=50)
+lr_grid = ParamGridBuilder().addGrid(lr.regParam, [0.01, 0.1]).addGrid(lr.elasticNetParam, [0.0, 0.5]).build()
+lr_run, lr_metrics = log_run("logistic_regression", lr, lr_grid)
 
-gbt_grid = ParamGridBuilder().addGrid(GBTClassifier.maxDepth, [3, 5]).addGrid(GBTClassifier.maxIter, [40, 80]).build()
-gbt_run, gbt_metrics = log_run("gradient_boosted_trees", GBTClassifier(labelCol="label", stepSize=0.1, seed=42), gbt_grid)
+gbt = GBTClassifier(labelCol="label", stepSize=0.1, seed=42)
+gbt_grid = ParamGridBuilder().addGrid(gbt.maxDepth, [3, 5]).addGrid(gbt.maxIter, [40, 80]).build()
+gbt_run, gbt_metrics = log_run("gradient_boosted_trees", gbt, gbt_grid)
 
 # COMMAND ----------
 
